@@ -1,0 +1,26 @@
+@startuml
+actor Client
+participant "Global Router\n(app.js)" as GlobalRouter
+participant "Pizza Router\n(pizzas.js)" as PizzaRouter
+participant "Controller\npizzaController" as Controller
+participant "Entity\nPizza" as Entity
+database "SQLite DB" as DB
+
+== Pizza Listing Flow ==
+
+Client -> GlobalRouter : GET /api/v1/pizzas
+GlobalRouter -> PizzaRouter : Delegates to /pizzas routes
+PizzaRouter -> Controller : getAllPizzas(req)
+Controller -> Entity : Pizza.findAll()
+Entity -> DB : SELECT * FROM pizzas
+DB --> Entity : Rows
+
+alt Success
+    Entity --> Controller : List of pizzas
+    Controller --> Client : 200 OK + [pizzas]
+else Error
+    Entity --> Controller : DatabaseError
+    Controller --> Client : 500 Internal Server Error
+end
+
+@enduml
