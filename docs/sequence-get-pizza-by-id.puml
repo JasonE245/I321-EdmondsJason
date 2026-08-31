@@ -1,0 +1,27 @@
+@startuml
+actor Client
+participant "Global Router\n(app.js)" as GlobalRouter
+participant "Pizza Router\n(pizzas.js)" as PizzaRouter
+participant "Controller\npizzaController" as Controller
+participant "Entity\nPizza (Sequelize)" as Entity
+database "SQLite DB" as DB
+
+== Pizza Detail Flow ==
+
+Client -> GlobalRouter : GET /api/v1/pizzas/{id}
+GlobalRouter -> PizzaRouter : Delegates to /pizzas routes
+PizzaRouter -> Controller : getPizzaById(req)
+Controller -> Entity : Pizza.findByPk(id)
+Entity -> DB : SELECT * FROM pizzas WHERE idPizzas = id
+
+alt Not found
+    DB --> Entity : No row
+    Entity --> Controller : null
+    Controller --> Client : 404 Not Found
+else Found
+    DB --> Entity : Row
+    Entity --> Controller : Pizza
+    Controller --> Client : 200 OK + {pizza}
+end
+
+@enduml

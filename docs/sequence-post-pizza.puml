@@ -1,0 +1,26 @@
+@startuml
+actor Client
+participant "Global Router\n(app.js)" as GlobalRouter
+participant "Pizza Router\n(pizzas.js)" as PizzaRouter
+participant "Controller\npizzaController" as Controller
+participant "Entity\nPizza (Sequelize)" as Entity
+database "SQLite DB" as DB
+
+== Pizza Creation Flow ==
+
+Client -> GlobalRouter : POST /api/v1/pizzas
+GlobalRouter -> PizzaRouter : Delegates to /pizzas routes
+PizzaRouter -> Controller : createPizza(req)
+Controller -> Entity : Pizza.create({ titre, prix, image })
+
+alt Validation error
+    Entity --> Controller : SequelizeValidationError
+    Controller --> Client : 400 Bad Request + validation messages
+else Success
+    Entity -> DB : INSERT INTO pizzas (...) VALUES (...)
+    DB --> Entity : Ack (row inserted)
+    Entity --> Controller : Success
+    Controller --> Client : 201 Created + {pizza}
+end
+
+@enduml
