@@ -14,19 +14,27 @@ const db = new sqlite3.Database(dbFile, (err) => {
 });
 
 const initSql = `
-CREATE TABLE IF NOT EXISTS pizzas (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  ingredients TEXT,
-  imageUrl TEXT,
-  price REAL NOT NULL,
-  created_at TEXT DEFAULT (datetime('now')),
-  updated_at TEXT DEFAULT (datetime('now'))
-);
+    CREATE TABLE IF NOT EXISTS pizzas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        ingredients TEXT,
+        imageUrl TEXT,
+        price REAL NOT NULL,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+        );
+
+    CREATE TABLE IF NOT EXISTS ingredients (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        price REAL NOT NULL,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+        );
 `;
 
 db.serialize(() => {
-    db.run(initSql, (err) => {
+    db.exec(initSql, (err) => {
         if (err) {
             console.error('Failed to initialize database', err);
             process.exit(1);
