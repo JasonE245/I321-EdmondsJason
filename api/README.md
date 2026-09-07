@@ -77,3 +77,20 @@ PORT=3000
 DB_FILE=./dev.sqlite
 NODE_ENV=development
 ```
+
+## Resources
+
+### Pizzas
+`GET /api/pizzas` — list all pizzas
+`GET /api/pizzas/{id}` — get a pizza by ID
+`POST /api/pizzas` — create a new pizza
+`PUT /api/pizzas/{id}` — update a pizza
+`DELETE /api/pizzas/{id}` — delete a pizza
+
+### Ingredients
+`GET /api/ingredients` — list all ingredients
+`GET /api/ingredients/{id}` — get an ingredient by ID
+`POST /api/ingredients` — create a new ingredient
+`PUT /api/ingredients/{id}` — update an ingredient
+`DELETE /api/ingredients/{id}` — delete an ingredient
+
