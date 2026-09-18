@@ -40,6 +40,13 @@ exports.findOne = async (req, res, next) => {
     }
 };
 
+exports.existsByNames = async (names) => {
+    const found = await Ingredient.findByNames(names);
+    const foundNames = found.map((i) => i.name);
+    const missing = names.filter((n) => !foundNames.includes(n));
+    return { valid: missing.length === 0, missing, found };
+};
+
 exports.update = async (req, res, next) => {
     try {
         const errors = validationResult(req);
