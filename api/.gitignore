@@ -4,3 +4,4 @@ node_modules/
 *.log
 dev.sqlite
 seed-ingredients.js
+seed-pizzas.js
