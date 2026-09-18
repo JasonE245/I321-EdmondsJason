@@ -1,0 +1,53 @@
+@startuml
+class PizzasController {
+  + create(req, res)
+  + findAll(req, res)
+  + findOne(req, res)
+  + update(req, res)
+  + delete(req, res)
+}
+
+class IngredientsController {
+  + create(req, res)
+  + findAll(req, res)
+  + findOne(req, res)
+  + update(req, res)
+  + delete(req, res)
+  + existsByNames(names) 
+}
+
+class Ingredient {
+  - id : INTEGER
+  - name : STRING
+  - price : FLOAT
+  - created_at : STRING
+  - updated_at : STRING
+  + create()
+  + findAll()
+  + findById()
+  + findByNames()
+  + update()
+  + delete()
+}
+
+class Pizza {
+  - id : INTEGER
+  - name : STRING
+  - imageUrl : STRING
+  - price : FLOAT
+  - created_at : STRING
+  - updated_at : STRING
+  + create()
+  + findAll()
+  + findById()
+  + update()
+  + delete()
+}
+
+PizzasController <--> Pizza : uses
+PizzasController ..> IngredientsController : delegates
+IngredientsController <--> Ingredient : uses
+
+Pizza "1..*" -- "0..*" Ingredient : contains
+
+@enduml

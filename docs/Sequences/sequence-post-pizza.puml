@@ -1,0 +1,54 @@
+@startuml
+actor Client
+participant "Pizzas Router\n(pizzasRouter.js)" as Router
+participant "express-validator" as Validator
+participant "PizzasController" as PC
+participant "IngredientsController" as IC
+participant "Entity\nIngredient" as IEntity
+participant "Entity\nPizza" as PEntity
+database "SQLite DB" as DB
+
+== Pizza Creation Flow ==
+
+Client -> Router : POST /api/pizzas\n{ name, imageUrl, price, ingredients }
+Router -> Validator : validate body
+
+alt Missing or invalid parameters
+    Validator --> Client : 400 Bad Request\n(validation error)
+else Parameters valid
+    Validator -> PC : create(req)
+
+    PC -> PEntity : findByName(name)
+    PEntity -> DB : SELECT * FROM pizzas WHERE name = ?
+    DB --> PEntity : result
+
+    alt Pizza name already exists
+        PEntity --> PC : existing pizza found
+        PC --> Client : 409 Conflict\n(pizza name already exists)
+    else Name available
+        PEntity --> PC : no match
+
+        PC -> IC : existsByNames(ingredientNames)
+        IC -> IEntity : findByNames(ingredientNames)
+        IEntity -> DB : SELECT * FROM ingredients WHERE name IN (...)
+        DB --> IEntity : matching rows
+        IEntity --> IC : found ingredients
+
+        alt Some ingredients don't exist
+            IC --> PC : missing ingredients list
+            PC --> Client : 400 Bad Request\n(unknown ingredient(s))
+        else All ingredients exist
+            IC --> PC : validation OK
+
+            PC -> PEntity : create({ name, imageUrl, price, ingredientIds })
+            PEntity -> DB : INSERT INTO pizzas (...)
+            DB --> PEntity : Ack (pizza inserted)
+            PEntity -> DB : INSERT INTO pizzas_ingredients (pizza_id, ingredient_id) ...
+            DB --> PEntity : Ack (links inserted)
+            PEntity --> PC : created pizza + ingredients
+            PC --> Client : 201 Created + { pizza }
+        end
+    end
+end
+
+@enduml
