@@ -35,6 +35,18 @@ class Ingredient {
         });
     }
 
+    static findByNames(names) {
+        if (!names || names.length === 0) return Promise.resolve([]);
+        const placeholders = names.map(() => '?').join(',');
+        const sql = `SELECT * FROM ingredients WHERE name IN (${placeholders})`;
+        return new Promise((resolve, reject) => {
+            db.all(sql, names, (err, rows) => {
+                if (err) return reject(err);
+                resolve(rows);
+            });
+        });
+    }
+
     static update(id, { name, price }) {
         const sql = `
             UPDATE ingredients
