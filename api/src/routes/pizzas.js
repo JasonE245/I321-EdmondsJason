@@ -103,7 +103,7 @@ const router = express.Router();
 
 const createAndUpdateValidations = [
     body('name').isString().notEmpty().withMessage('name is required'),
-    body('ingredients').optional().isString(),
+    body('ingredients').optional().isArray().withMessage('ingredients must be an array of strings'),
     body('imageUrl').optional().isString(),
     body('price').isFloat({ gt: 0 }).withMessage('price must be a positive number'),
 ];

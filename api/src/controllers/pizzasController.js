@@ -1,6 +1,7 @@
 // controllers/pizzasController.js
 const { validationResult } = require('express-validator');
 const Pizza = require('../entities/Pizza');
+const { existsByNames } = require('./ingredientsController');
 
 exports.create = async (req, res, next) => {
     try {
@@ -9,8 +10,20 @@ exports.create = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { name, ingredients, imageUrl, price } = req.body;
-        const created = await Pizza.create({ name, ingredients, imageUrl, price });
+        const { name, imageUrl, price, ingredients = [] } = req.body;
+
+        const existingPizza = await Pizza.findByName(name);
+        if (existingPizza) {
+            return res.status(409).json({ error: 'Pizza name already exists' });
+        }
+
+        const { valid, missing, found } = await existsByNames(ingredients);
+        if (!valid) {
+            return res.status(400).json({ error: 'Unknown ingredient(s)', missing });
+        }
+
+        const ingredientIds = found.map((i) => i.id);
+        const created = await Pizza.create({ name, imageUrl, price, ingredientIds });
         return res.status(201).json(created);
     } catch (err) {
         next(err);

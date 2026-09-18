@@ -14,23 +14,40 @@ const db = new sqlite3.Database(dbFile, (err) => {
 });
 
 const initSql = `
-    CREATE TABLE IF NOT EXISTS pizzas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        ingredients TEXT,
-        imageUrl TEXT,
-        price REAL NOT NULL,
-        created_at TEXT DEFAULT (datetime('now')),
-        updated_at TEXT DEFAULT (datetime('now'))
-        );
+CREATE TABLE IF NOT EXISTS pizzas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    ingredients TEXT,
+    imageUrl TEXT,
+    price REAL NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+    );
 
-    CREATE TABLE IF NOT EXISTS ingredients (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        price REAL NOT NULL,
-        created_at TEXT DEFAULT (datetime('now')),
-        updated_at TEXT DEFAULT (datetime('now'))
-        );
+CREATE TABLE IF NOT EXISTS ingredients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    price REAL NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+CREATE TABLE IF NOT EXISTS pizzas_has_ingredients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pizza_id INTEGER NOT NULL,
+    ingredients_id INTEGER,
+    UNIQUE (pizza_id, ingredients_id),
+    FOREIGN KEY (pizza_id)
+        REFERENCES pizzas (id)
+        ON DELETE NO ACTION ON UPDATE NO ACTION,
+    FOREIGN KEY (ingredients_id)
+        REFERENCES ingredients (id)
+        ON DELETE NO ACTION ON UPDATE NO ACTION
+    );
+    
+    CREATE INDEX IF NOT EXISTS fk_pizza_has_ingredients_pizzas_idx ON pizzas_has_ingredients (pizza_id);
+
+    CREATE INDEX IF NOT EXISTS fk_pizza_has_ingredients_ingredients_idx ON pizzas_has_ingredients (ingredients_id);
 `;
 
 db.serialize(() => {
