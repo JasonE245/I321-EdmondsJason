@@ -14,17 +14,12 @@ const db = new sqlite3.Database(dbFile, (err) => {
 });
 
 const initSql = `
-CREATE TABLE IF NOT EXISTS pizzas_has_ingredients (
+CREATE TABLE IF NOT EXISTS ingredients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    pizza_id INTEGER NOT NULL,
-    ingredients_id INTEGER,
-    UNIQUE (pizza_id, ingredients_id),
-    FOREIGN KEY (pizza_id)
-        REFERENCES pizzas (id)
-        ON DELETE NO ACTION ON UPDATE NO ACTION,
-    FOREIGN KEY (ingredients_id)
-        REFERENCES ingredients (id)
-        ON DELETE NO ACTION ON UPDATE NO ACTION
+    name TEXT NOT NULL UNIQUE,
+    price REAL NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
     );
 `;
 
