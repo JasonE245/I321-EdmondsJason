@@ -1,0 +1,7 @@
+node_modules/
+.env
+.idea/
+*.log
+dev.sqlite
+seed-ingredients.js
+seed-pizzas.js
