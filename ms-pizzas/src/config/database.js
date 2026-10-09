@@ -17,7 +17,6 @@ const initSql = `
 CREATE TABLE IF NOT EXISTS pizzas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
-    ingredients TEXT,
     imageUrl TEXT,
     price REAL NOT NULL,
     created_at TEXT DEFAULT (datetime('now')),
@@ -27,7 +26,7 @@ CREATE TABLE IF NOT EXISTS pizzas (
 CREATE TABLE IF NOT EXISTS pizzas_has_ingredients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     pizza_id INTEGER NOT NULL,
-    ingredients_id INTEGER,
+    ingredients_id INTEGER NOT NULL,
     UNIQUE (pizza_id, ingredients_id),
     FOREIGN KEY (pizza_id)
         REFERENCES pizzas (id)
